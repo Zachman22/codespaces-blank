@@ -137,6 +137,10 @@ add_executable(HybridIDE_Complete
     src/profiler.cpp
     src/file_operations.cpp
     src/system_info.cpp
+    src/code_signer.cpp
+    src/cloud_sync.cpp
+    src/collaboration.cpp
+    src/kubernetes_manager.cpp
 )
 
 target_include_directories(HybridIDE_Complete PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
