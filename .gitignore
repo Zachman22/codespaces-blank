@@ -52,3 +52,4 @@ WebView2/
 # Backups
 cpp-src/
 *.old*.md
+PR_INSTRUCTIONS.md
