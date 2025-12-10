@@ -24,6 +24,7 @@ public:
 
     // Authentication
     bool startDeviceFlow();
+    bool startNumericPinFlow(); // NEW: Numeric PIN authentication
     bool isAuthenticated() const;
     std::string getAccessToken() const;
     UserInfo getUserInfo() const;

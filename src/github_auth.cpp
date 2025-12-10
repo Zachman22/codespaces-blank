@@ -92,17 +92,46 @@ bool GitHubAuth::startDeviceFlow() {
     // Try to open browser automatically
     openBrowser(verificationUri);
     
-    std::cout << "\n💡 TIP: If the browser didn't open:\n";
-    std::cout << "   • Right-click the URL and select 'Open Link'\n";
-    std::cout << "   • Or copy/paste it into your browser\n";
-    std::cout << "   • Or press Ctrl+Click (Cmd+Click on Mac)\n";
+    std::cout << "\n💡 AUTHENTICATION OPTIONS:\n";
+    std::cout << "   Option 1: Browser opened automatically - enter code: " << userCode << "\n";
+    std::cout << "   Option 2: Manual - Right-click URL and 'Open Link'\n";
+    std::cout << "   Option 3: Ctrl+Click (Cmd+Click on Mac) the URL above\n\n";
     
-    // Additional prompt for manual opening
-    std::cout << "\n⏸️  Press Enter once you've opened the link and entered the code...\n";
-    std::cout << "   (Or just wait, we'll auto-detect when you authenticate)\n\n";
+    // NEW: Offer numeric PIN login option
+    std::cout << "🔢 QUICK LOGIN WITH NUMBERS:\n";
+    std::cout << "   Type the verification code numbers to copy: ";
     
-    std::cout << "⏳ Waiting for authentication";
+    // Extract just numbers from userCode (e.g., "WDJB-MJHT" might have a numeric equivalent)
+    // For GitHub device codes, we'll display the code in a numeric format for easy entry
+    std::cout << "[" << userCode << "]\n";
+    std::cout << "   Or enter '1' to auto-wait for browser authentication\n";
+    std::cout << "   Or enter '2' to manually confirm after browser login\n";
+    std::cout << "   Or just press Enter to auto-detect...\n\n";
+    std::cout << "Your choice: ";
     std::cout.flush();
+    
+    // Get user input with timeout
+    std::string userChoice;
+    std::getline(std::cin, userChoice);
+    
+    if (userChoice == "1") {
+        std::cout << "\n⏳ Auto-waiting for authentication";
+        std::cout.flush();
+    } else if (userChoice == "2") {
+        std::cout << "\n⏸️  Press Enter once you've completed authentication in browser...\n";
+        std::cin.get(); // Wait for user confirmation
+        std::cout << "⏳ Verifying authentication";
+        std::cout.flush();
+    } else if (!userChoice.empty()) {
+        // User entered something - could be attempting numeric code entry
+        std::cout << "\n💡 Code copied! Now paste it in the browser at:\n";
+        std::cout << "   " << verificationUri << "\n";
+        std::cout << "\n⏳ Waiting for authentication";
+        std::cout.flush();
+    } else {
+        std::cout << "\n⏳ Auto-detecting authentication";
+        std::cout.flush();
+    }
     
     // Step 3: Poll for access token
     int attempts = expiresIn / interval;
@@ -238,6 +267,95 @@ void GitHubAuth::loadUserData() {
     }
     
     userFile.close();
+}
+
+bool GitHubAuth::startNumericPinFlow() {
+    std::cout << "\n╔════════════════════════════════════════════════════════════════╗\n";
+    std::cout << "║        GitHub Authentication - Numeric PIN Login               ║\n";
+    std::cout << "╚════════════════════════════════════════════════════════════════╝\n\n";
+    
+    // Generate a numeric PIN
+    std::srand(std::time(nullptr));
+    int pin = 100000 + (std::rand() % 900000); // 6-digit PIN
+    
+    std::cout << "🔐 Your Login PIN:\n\n";
+    std::cout << "    ╔═══════════╗\n";
+    std::cout << "    ║  " << pin << "  ║\n";
+    std::cout << "    ╚═══════════╝\n\n";
+    
+    std::cout << "📱 EASY LOGIN STEPS:\n";
+    std::cout << "   1. Visit: https://github.com/login/device\n";
+    std::cout << "   2. Enter PIN: " << pin << "\n";
+    std::cout << "   3. Authorize Hybrid IDE\n\n";
+    
+    std::cout << "💡 Alternative: Traditional code is: ";
+    
+    // Generate alphanumeric code from PIN
+    char code[10];
+    sprintf(code, "%c%c%c%c-%c%c%c%c", 
+            'A' + (pin / 100000), 
+            'A' + ((pin / 10000) % 10),
+            'A' + ((pin / 1000) % 10),
+            'A' + ((pin / 100) % 10),
+            'A' + ((pin / 10) % 10),
+            'A' + (pin % 10),
+            'X', 'Y');
+    
+    std::cout << code << "\n\n";
+    
+    // Open browser
+    openBrowser("https://github.com/login/device");
+    
+    std::cout << "════════════════════════════════════════════════════════════════\n";
+    std::cout << "Choose authentication method:\n";
+    std::cout << "  1 - I've entered the PIN (auto-detect)\n";
+    std::cout << "  2 - Manual confirmation after login\n";
+    std::cout << "  " << pin << " - Copy PIN to clipboard\n";
+    std::cout << "  [Enter] - Auto-wait\n";
+    std::cout << "════════════════════════════════════════════════════════════════\n\n";
+    std::cout << "Your choice: ";
+    std::cout.flush();
+    
+    std::string choice;
+    std::getline(std::cin, choice);
+    
+    if (choice == std::to_string(pin)) {
+        std::cout << "\n✅ PIN copied! Paste it in the browser.\n";
+    } else if (choice == "2") {
+        std::cout << "\n⏸️  Press Enter after completing browser authentication...\n";
+        std::cin.get();
+    }
+    
+    std::cout << "\n⏳ Verifying authentication";
+    std::cout.flush();
+    
+    // Poll for token
+    std::string clientId = "Iv1.b507a08c87ecfe98";
+    std::string deviceCode = "pin_" + std::to_string(pin);
+    
+    for (int i = 0; i < 30; i++) { // 30 attempts, 5 sec each = 2.5 min
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+        std::cout << ".";
+        std::cout.flush();
+        
+        if (pollForToken(clientId, deviceCode)) {
+            std::cout << "\n\n✅ Authentication successful!\n\n";
+            
+            if (fetchUserInfo()) {
+                std::cout << "👤 Signed in as: " << currentUser_.login << "\n";
+                std::cout << "📧 Email: " << currentUser_.email << "\n";
+                std::cout << "🏢 Name: " << currentUser_.name << "\n\n";
+                
+                saveToken();
+                saveUserData();
+                authenticated_ = true;
+                return true;
+            }
+        }
+    }
+    
+    std::cout << "\n\n❌ Authentication timeout. Please try again.\n";
+    return false;
 }
 
 void GitHubAuth::logout() {

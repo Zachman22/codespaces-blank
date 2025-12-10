@@ -60,11 +60,27 @@ Your authentication token is stored securely on your local machine only.
         
         int choice;
         std::cin >> choice;
+        std::cin.ignore(); // Clear newline
         
         if (choice == 2) {
             auth.logout();
-            std::cout << "\nPlease authenticate again:\n\n";
-            if (!auth.startDeviceFlow()) {
+            std::cout << "\nChoose authentication method:\n";
+            std::cout << "  1. Browser login (standard)\n";
+            std::cout << "  2. Numeric PIN login (easy)\n";
+            std::cout << "Choice (1-2): ";
+            
+            int authChoice;
+            std::cin >> authChoice;
+            std::cin.ignore(); // Clear newline
+            
+            bool success = false;
+            if (authChoice == 2) {
+                success = auth.startNumericPinFlow();
+            } else {
+                success = auth.startDeviceFlow();
+            }
+            
+            if (!success) {
                 std::cerr << "❌ Authentication failed\n";
                 return 1;
             }
@@ -75,7 +91,25 @@ Your authentication token is stored securely on your local machine only.
         }
     } else {
         // Start authentication flow
-        if (!auth.startDeviceFlow()) {
+        std::cout << "Choose authentication method:\n";
+        std::cout << "  1. Browser login with verification code\n";
+        std::cout << "  2. Numeric PIN login (easier, just numbers!)\n";
+        std::cout << "Choice (1-2): ";
+        
+        int authChoice;
+        std::cin >> authChoice;
+        std::cin.ignore(); // Clear newline
+        
+        bool success = false;
+        if (authChoice == 2) {
+            std::cout << "\n🔢 Starting Numeric PIN authentication...\n";
+            success = auth.startNumericPinFlow();
+        } else {
+            std::cout << "\n🌐 Starting browser authentication...\n";
+            success = auth.startDeviceFlow();
+        }
+        
+        if (!success) {
             std::cerr << "❌ Authentication failed\n";
             std::cerr << "\nYou can skip authentication and use offline features only.\n";
             std::cerr << "Run this setup again anytime to authenticate.\n";
