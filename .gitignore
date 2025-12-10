@@ -1,0 +1,41 @@
+# Build artifacts
+build/
+output/
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Package output
+package/
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.user
+*.sln.docstates
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+build.log
+
+# Temporary files
+*.tmp
+*.temp
+~*
+
+# WebView2 cache
+WebView2/

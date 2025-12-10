@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "compiler": {
+    "path": "g++",
+    "flags": [
+      "-std=c++17",
+      "-Wall",
+      "-Wextra"
+    ],
+    "optimization": "O2",
+    "debugSymbols": true
+  },
+  "editor": {
+    "fontSize": 14,
+    "theme": "vs-dark",
+    "tabSize": 4,
+    "wordWrap": true,
+    "minimap": true,
+    "lineNumbers": true,
+    "autoSave": false
+  },
+  "build": {
+    "autoBuild": false,
+    "showWarnings": true,
+    "outputDirectory": "build"
+  },
+  "paths": {
+    "projectRoot": ".",
+    "sourceDirectory": "src",
+    "includeDirectories": ["include"],
+    "outputDirectory": "build"
+  },
+  "ui": {
+    "showSystemInfo": true,
+    "showAIAssistant": true,
+    "showBuildPanel": true,
+    "panelHeight": 250
+  }
+}
