@@ -1,0 +1,86 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build All",
+            "type": "shell",
+            "command": "cd ${workspaceFolder} && mkdir -p build && cd build && cmake .. && make -j$(nproc)",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared",
+                "clear": true
+            }
+        },
+        {
+            "label": "Run Hybrid IDE",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/bin/HybridIDE",
+            "group": "none",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "focus": true
+            },
+            "dependsOn": ["Build All"]
+        },
+        {
+            "label": "Run Auto Coder Chatbot",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/bin/AutoCoderChatbot",
+            "group": "none",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "focus": true
+            },
+            "dependsOn": ["Build All"]
+        },
+        {
+            "label": "Run Script Generator",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/bin/ScriptGeneratorChatbot",
+            "group": "none",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "focus": true
+            },
+            "dependsOn": ["Build All"]
+        },
+        {
+            "label": "Setup GitHub Authentication",
+            "type": "shell",
+            "command": "export GITHUB_CLIENT_ID='Ov23li9UIwRJ8fWFsTV3' && ${workspaceFolder}/build/bin/SetupAuth",
+            "group": "none",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "focus": true
+            },
+            "dependsOn": ["Build All"]
+        },
+        {
+            "label": "Clean Build",
+            "type": "shell",
+            "command": "rm -rf ${workspaceFolder}/build",
+            "group": "none",
+            "problemMatcher": []
+        },
+        {
+            "label": "Rebuild All",
+            "type": "shell",
+            "dependsOn": ["Clean Build", "Build All"],
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}
