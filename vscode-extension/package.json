@@ -24,18 +24,26 @@
     "kubernetes"
   ],
   "activationEvents": [
-    "onCommand:hybrid-ide.generateCode",
-    "onCommand:hybrid-ide.reviewCode",
-    "onCommand:hybrid-ide.debugWithAI",
-    "onCommand:hybrid-ide.profile",
-    "onCommand:hybrid-ide.deployToKubernetes",
-    "onCommand:hybrid-ide.startCollaboration",
-    "onCommand:hybrid-ide.syncToCloud",
-    "onView:hybrid-ide-explorer"
+    "*"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
+      {
+        "command": "hybrid-ide.openChatbot",
+        "title": "Hybrid IDE: Open AI Chatbot",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "hybrid-ide.buildExecutable",
+        "title": "Hybrid IDE: Build Executable",
+        "icon": "$(package)"
+      },
+      {
+        "command": "hybrid-ide.generateGUI",
+        "title": "Hybrid IDE: Generate GUI from Imports",
+        "icon": "$(layout)"
+      },
       {
         "command": "hybrid-ide.generateCode",
         "title": "Hybrid IDE: Generate Code with AI",
@@ -225,7 +233,6 @@
     "ws": "^8.14.0",
     "yaml": "^2.3.4"
   },
-  "icon": "icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/Zachman22/hybrid-ide"
