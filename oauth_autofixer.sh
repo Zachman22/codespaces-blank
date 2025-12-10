@@ -271,8 +271,20 @@ if [ ! -f "$HOME/.hybridide/auth/github_token" ]; then
         echo "  ╚═══════════════════════════════════════════════════════════════╝"
         echo ""
         
-        # Try to open browser
-        if command -v xdg-open &> /dev/null; then
+        # Try to open browser (prioritize Brave)
+        if command -v brave-browser &> /dev/null; then
+            brave-browser "$VERIFICATION_URI" 2>/dev/null &
+            log_fix "Brave browser opened automatically"
+        elif command -v brave &> /dev/null; then
+            brave "$VERIFICATION_URI" 2>/dev/null &
+            log_fix "Brave browser opened automatically"
+        elif [ -f "/usr/bin/brave-browser" ]; then
+            /usr/bin/brave-browser "$VERIFICATION_URI" 2>/dev/null &
+            log_fix "Brave browser opened automatically"
+        elif [ -f "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" ]; then
+            "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser" "$VERIFICATION_URI" 2>/dev/null &
+            log_fix "Brave browser opened automatically"
+        elif command -v xdg-open &> /dev/null; then
             xdg-open "$VERIFICATION_URI" 2>/dev/null &
             log_fix "Browser opened automatically"
         elif command -v open &> /dev/null; then
