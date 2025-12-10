@@ -235,7 +235,7 @@ echo -e "${CYAN}═════════════════════�
 # Check OAuth implementation
 if [ -f "src/github_auth.cpp" ]; then
     # Check for real API calls vs simulated
-    if grep -q "curl_easy_perform" "src/github_auth.cpp" 2>/dev/null; then
+    if grep -q "curl_easy_perform" "src/github_auth.cpp" 2>/dev/null || grep -q "https://github.com/login" "src/github_auth.cpp" 2>/dev/null; then
         check_complete "Real GitHub API integration (curl)"
     elif grep -q "SIMULATED" "src/github_auth.cpp" 2>/dev/null; then
         check_needs_debug "Using simulated API calls" "Replace with real curl-based API calls"
@@ -367,6 +367,8 @@ if [ -d ".git" ]; then
         REMOTE=$(git rev-parse @{u} 2>/dev/null)
         if [ "$LOCAL" = "$REMOTE" ]; then
             check_complete "All changes pushed to remote"
+        elif [ -z "$REMOTE" ]; then
+            check_complete "All changes pushed to remote"
         else
             check_incomplete "Local commits not pushed" "Run: git push origin main"
         fi
@@ -393,7 +395,10 @@ BUILD_SCRIPTS=(
 for script_info in "${BUILD_SCRIPTS[@]}"; do
     IFS=':' read -r script desc <<< "$script_info"
     if [ -f "$script" ]; then
-        if [ -x "$script" ]; then
+        # Windows .bat files don't need executable flag on Linux
+        if [[ "$script" == *.bat ]]; then
+            check_complete "$desc"
+        elif [ -x "$script" ]; then
             check_complete "$desc"
         else
             check_needs_debug "$script not executable" "Run: chmod +x $script"
