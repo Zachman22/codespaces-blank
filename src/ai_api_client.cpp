@@ -3,8 +3,12 @@
 #include <sstream>
 #include <fstream>
 #include <cstdlib>
+#include <iomanip>
+#ifdef HAS_CURL
 #include <curl/curl.h>
-#include <json/json.h>
+#endif
+// Note: jsoncpp is optional, we'll use simple string parsing for now
+// #include <json/json.h>
 
 AIAPIClient::AIAPIClient() 
     : defaultModel_(Model::GPT_4_TURBO),
@@ -44,23 +48,52 @@ bool AIAPIClient::loadAPIKeysFromConfig(const std::string& configPath) {
         return false;
     }
     
-    Json::Value root;
-    Json::CharReaderBuilder builder;
-    std::string errs;
-    
-    if (!Json::parseFromStream(builder, file, &root, &errs)) {
-        std::cerr << "Failed to parse config: " << errs << std::endl;
-        return false;
+    // Simple key=value parsing instead of JSON
+    std::string line;
+    while (std::getline(file, line)) {
+        size_t pos = line.find('=');
+        if (pos != std::string::npos) {
+            std::string key = line.substr(0, pos);
+            std::string value = line.substr(pos + 1);
+            
+            // Trim quotes if present
+            if (!value.empty() && value[0] == '\"') {
+                value = value.substr(1, value.length() - 2);
+            }
+            
+            if (key == "openai_api_key" || key == "OPENAI_API_KEY") {
+                openaiAPIKey_ = value;
+            } else if (key == "anthropic_api_key" || key == "ANTHROPIC_API_KEY") {
+                anthropicAPIKey_ = value;
+            }
+        }
     }
     
-    if (root.isMember("openai_api_key")) {
-        openaiAPIKey_ = root["openai_api_key"].asString();
-    }
-    if (root.isMember("anthropic_api_key")) {
-        anthropicAPIKey_ = root["anthropic_api_key"].asString();
-    }
-    
+    file.close();
     return !openaiAPIKey_.empty() || !anthropicAPIKey_.empty();
+}
+
+// Helper function to escape JSON strings
+std::string AIAPIClient::escapeJson(const std::string& str) {
+    std::ostringstream escaped;
+    for (char c : str) {
+        switch (c) {
+            case '\"': escaped << "\\\""; break;
+            case '\\\\': escaped << "\\\\\\\\"; break;
+            case '\b': escaped << "\\\\b"; break;
+            case '\f': escaped << "\\\\f"; break;
+            case '\n': escaped << "\\\\n"; break;
+            case '\r': escaped << "\\\\r"; break;
+            case '\t': escaped << "\\\\t"; break;
+            default:
+                if (c >= 32 && c <= 126) {
+                    escaped << c;
+                } else {
+                    escaped << "\\\\u" << std::hex << std::setw(4) << std::setfill('0') << (int)c;
+                }
+        }
+    }
+    return escaped.str();
 }
 
 AIAPIClient::CompletionResponse AIAPIClient::complete(const CompletionRequest& request) {
@@ -254,41 +287,45 @@ void AIAPIClient::streamComplete(
 }
 
 std::string AIAPIClient::buildOpenAIPayload(const CompletionRequest& request) {
-    Json::Value root;
-    root["model"] = modelToString(request.model);
-    root["temperature"] = request.temperature;
-    root["max_tokens"] = request.maxTokens;
+    std::ostringstream json;
+    json << "{";
+    json << "\"model\":\"" << modelToString(request.model) << "\",";
+    json << "\"temperature\":" << request.temperature << ",";
+    json << "\"max_tokens\":" << request.maxTokens << ",";
+    json << "\"messages\":[";
     
-    Json::Value messages(Json::arrayValue);
-    for (const auto& msg : request.messages) {
-        Json::Value message;
-        message["role"] = msg.role;
-        message["content"] = msg.content;
-        messages.append(message);
+    for (size_t i = 0; i < request.messages.size(); ++i) {
+        if (i > 0) json << ",";
+        json << "{";
+        json << "\"role\":\"" << request.messages[i].role << "\",";
+        json << "\"content\":\"" << escapeJson(request.messages[i].content) << "\"";
+        json << "}";
     }
-    root["messages"] = messages;
     
-    Json::StreamWriterBuilder writer;
-    return Json::writeString(writer, root);
+    json << "]";
+    json << "}";
+    return json.str();
 }
 
 std::string AIAPIClient::buildAnthropicPayload(const CompletionRequest& request) {
-    Json::Value root;
-    root["model"] = modelToString(request.model);
-    root["max_tokens"] = request.maxTokens;
-    root["temperature"] = request.temperature;
+    std::ostringstream json;
+    json << "{";
+    json << "\"model\":\"" << modelToString(request.model) << "\",";
+    json << "\"max_tokens\":" << request.maxTokens << ",";
+    json << "\"temperature\":" << request.temperature << ",";
+    json << "\"messages\":[";
     
-    Json::Value messages(Json::arrayValue);
-    for (const auto& msg : request.messages) {
-        Json::Value message;
-        message["role"] = msg.role;
-        message["content"] = msg.content;
-        messages.append(message);
+    for (size_t i = 0; i < request.messages.size(); ++i) {
+        if (i > 0) json << ",";
+        json << "{";
+        json << "\"role\":\"" << request.messages[i].role << "\",";
+        json << "\"content\":\"" << escapeJson(request.messages[i].content) << "\"";
+        json << "}";
     }
-    root["messages"] = messages;
     
-    Json::StreamWriterBuilder writer;
-    return Json::writeString(writer, root);
+    json << "]";
+    json << "}";
+    return json.str();
 }
 
 std::string AIAPIClient::makeHTTPRequest(

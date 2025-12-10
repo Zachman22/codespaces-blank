@@ -68,9 +68,8 @@ public:
     bool restart();
 
     // Breakpoints
-    int setBreakpoint(const std::string& location);
     int setBreakpoint(const std::string& file, int line);
-    int setBreakpoint(const std::string& function);
+    int setBreakpointAtFunction(const std::string& function);
     int setConditionalBreakpoint(const std::string& location, const std::string& condition);
     bool removeBreakpoint(int id);
     bool enableBreakpoint(int id);

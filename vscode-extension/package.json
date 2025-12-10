@@ -98,19 +98,23 @@
       "hybrid-ide": [
         {
           "id": "hybrid-ide-explorer",
-          "name": "AI Assistant"
+          "name": "AI Assistant",
+          "icon": "$(robot)"
         },
         {
           "id": "hybrid-ide-kubernetes",
-          "name": "Kubernetes"
+          "name": "Kubernetes",
+          "icon": "$(cloud)"
         },
         {
           "id": "hybrid-ide-collaboration",
-          "name": "Collaboration"
+          "name": "Collaboration",
+          "icon": "$(organization)"
         },
         {
           "id": "hybrid-ide-profiler",
-          "name": "Profiler"
+          "name": "Profiler",
+          "icon": "$(pulse)"
         }
       ]
     },

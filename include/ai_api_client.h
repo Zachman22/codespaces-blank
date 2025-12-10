@@ -124,6 +124,7 @@ private:
     double calculateCost(Model model, int tokens) const;
     std::string buildOpenAIPayload(const CompletionRequest& request);
     std::string buildAnthropicPayload(const CompletionRequest& request);
+    std::string escapeJson(const std::string& str);
     CompletionResponse parseOpenAIResponse(const std::string& response);
     CompletionResponse parseAnthropicResponse(const std::string& response);
 };
