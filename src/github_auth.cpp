@@ -83,14 +83,23 @@ bool GitHubAuth::startDeviceFlow() {
     
     // Step 2: Display verification instructions
     std::cout << "════════════════════════════════════════════════════════════════\n";
-    std::cout << "  Please visit this URL to authenticate:\n\n";
+    std::cout << "  STEP 1: Click or copy this URL:\n\n";
     std::cout << "  🌐 " << verificationUri << "\n\n";
-    std::cout << "  And enter this code:\n\n";
+    std::cout << "  STEP 2: Enter this verification code:\n\n";
     std::cout << "  📋 " << userCode << "\n";
-    std::cout << "════════════════════════════════════════════════════════════════\n\n";
+    std::cout << "════════════════════════════════════════════════════════════════\n";
     
     // Try to open browser automatically
     openBrowser(verificationUri);
+    
+    std::cout << "\n💡 TIP: If the browser didn't open:\n";
+    std::cout << "   • Right-click the URL and select 'Open Link'\n";
+    std::cout << "   • Or copy/paste it into your browser\n";
+    std::cout << "   • Or press Ctrl+Click (Cmd+Click on Mac)\n";
+    
+    // Additional prompt for manual opening
+    std::cout << "\n⏸️  Press Enter once you've opened the link and entered the code...\n";
+    std::cout << "   (Or just wait, we'll auto-detect when you authenticate)\n\n";
     
     std::cout << "⏳ Waiting for authentication";
     std::cout.flush();
@@ -248,20 +257,42 @@ void GitHubAuth::logout() {
 }
 
 void GitHubAuth::openBrowser(const std::string& url) {
-    std::cout << "🌐 Attempting to open browser...\n";
+    std::cout << "\n🌐 Opening browser automatically...\n";
     
 #ifdef _WIN32
-    std::string command = "start " + url;
+    std::string command = "start \"\" \"" + url + "\"";
+    system(command.c_str());
 #elif __APPLE__
-    std::string command = "open " + url;
+    std::string command = "open \"" + url + "\"";
+    system(command.c_str());
 #else
-    std::string command = "xdg-open " + url + " 2>/dev/null || sensible-browser " + url + " 2>/dev/null &";
-#endif
+    // Try multiple browser options on Linux
+    std::string browsers[] = {
+        "$BROWSER",
+        "xdg-open",
+        "sensible-browser", 
+        "google-chrome",
+        "firefox",
+        "chromium-browser",
+        "chromium"
+    };
     
-    int result = system(command.c_str());
-    if (result != 0) {
-        std::cout << "⚠️  Could not open browser automatically. Please visit the URL manually.\n";
+    bool opened = false;
+    for (const auto& browser : browsers) {
+        std::string command = browser + " \"" + url + "\" >/dev/null 2>&1 &";
+        int result = system(command.c_str());
+        if (result == 0) {
+            opened = true;
+            std::cout << "✅ Browser opened successfully!\n";
+            break;
+        }
     }
+    
+    if (!opened) {
+        std::cout << "⚠️  Could not open browser automatically.\n";
+        std::cout << "    Please copy and paste the URL above into your browser.\n";
+    }
+#endif
 }
 
 std::string GitHubAuth::makeGitHubAPIRequest(const std::string& endpoint, const std::string& method) {
