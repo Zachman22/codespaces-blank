@@ -49,6 +49,8 @@ set(HEADERS
     include/auto_coder.h
     include/ai_agent_system.h
     include/auto_coder_chatbot.h
+    include/script_generator.h
+    include/script_verifier.h
 )
 
 # Create executable
@@ -191,6 +193,25 @@ else()
 endif()
 
 # Print configuration
+# Build standalone script generator chatbot executable
+add_executable(ScriptGeneratorChatbot 
+    script_generator_main.cpp
+    src/script_generator.cpp
+    src/script_verifier.cpp
+    src/code_signer.cpp
+)
+target_include_directories(ScriptGeneratorChatbot PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+if(NOT WIN32)
+    find_package(OpenSSL REQUIRED)
+    target_link_libraries(ScriptGeneratorChatbot PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+endif()
+if(MSVC)
+    target_compile_options(ScriptGeneratorChatbot PRIVATE /W4)
+else()
+    target_compile_options(ScriptGeneratorChatbot PRIVATE -Wall -Wextra)
+endif()
+
+# Print configuration
 message(STATUS "")
 message(STATUS "========================================")
 message(STATUS "  Hybrid IDE Configuration")
@@ -198,6 +219,7 @@ message(STATUS "========================================")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "Install prefix: ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "Targets: HybridIDE, AutoCoderChatbot")
+message(STATUS "Targets: HybridIDE, AutoCoderChatbot, ScriptGeneratorChatbot")
 message(STATUS "========================================")
 message(STATUS "")
+

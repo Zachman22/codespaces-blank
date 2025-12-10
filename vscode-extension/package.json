@@ -1,0 +1,234 @@
+{
+  "name": "hybrid-ide-vscode",
+  "displayName": "Hybrid IDE",
+  "description": "AI-powered IDE features for VSCode - Code generation, debugging, profiling, and collaboration",
+  "version": "2.0.0",
+  "publisher": "zacharys-playroom",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Debuggers",
+    "Other",
+    "Machine Learning"
+  ],
+  "keywords": [
+    "ai",
+    "code-generation",
+    "debugging",
+    "profiling",
+    "collaboration",
+    "openai",
+    "claude",
+    "kubernetes"
+  ],
+  "activationEvents": [
+    "onCommand:hybrid-ide.generateCode",
+    "onCommand:hybrid-ide.reviewCode",
+    "onCommand:hybrid-ide.debugWithAI",
+    "onCommand:hybrid-ide.profile",
+    "onCommand:hybrid-ide.deployToKubernetes",
+    "onCommand:hybrid-ide.startCollaboration",
+    "onCommand:hybrid-ide.syncToCloud",
+    "onView:hybrid-ide-explorer"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "hybrid-ide.generateCode",
+        "title": "Hybrid IDE: Generate Code with AI",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "hybrid-ide.reviewCode",
+        "title": "Hybrid IDE: Review Code with AI",
+        "icon": "$(checklist)"
+      },
+      {
+        "command": "hybrid-ide.debugWithAI",
+        "title": "Hybrid IDE: Debug with AI Assistant",
+        "icon": "$(bug)"
+      },
+      {
+        "command": "hybrid-ide.profile",
+        "title": "Hybrid IDE: Profile Performance",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "hybrid-ide.deployToKubernetes",
+        "title": "Hybrid IDE: Deploy to Kubernetes",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "hybrid-ide.startCollaboration",
+        "title": "Hybrid IDE: Start Collaboration Session",
+        "icon": "$(live-share)"
+      },
+      {
+        "command": "hybrid-ide.syncToCloud",
+        "title": "Hybrid IDE: Sync to Cloud",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "hybrid-ide.generateScript",
+        "title": "Hybrid IDE: Generate Multi-Platform Script",
+        "icon": "$(file-code)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "hybrid-ide",
+          "title": "Hybrid IDE",
+          "icon": "$(tools)"
+        }
+      ]
+    },
+    "views": {
+      "hybrid-ide": [
+        {
+          "id": "hybrid-ide-explorer",
+          "name": "AI Assistant"
+        },
+        {
+          "id": "hybrid-ide-kubernetes",
+          "name": "Kubernetes"
+        },
+        {
+          "id": "hybrid-ide-collaboration",
+          "name": "Collaboration"
+        },
+        {
+          "id": "hybrid-ide-profiler",
+          "name": "Profiler"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Hybrid IDE",
+      "properties": {
+        "hybrid-ide.openai.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenAI API Key for GPT models"
+        },
+        "hybrid-ide.anthropic.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Anthropic API Key for Claude models"
+        },
+        "hybrid-ide.defaultModel": {
+          "type": "string",
+          "default": "gpt-4-turbo",
+          "enum": [
+            "gpt-4-turbo",
+            "gpt-4",
+            "gpt-3.5-turbo",
+            "claude-3-opus",
+            "claude-3-5-sonnet",
+            "claude-3-sonnet",
+            "claude-3-haiku"
+          ],
+          "description": "Default AI model to use"
+        },
+        "hybrid-ide.kubernetes.kubeconfig": {
+          "type": "string",
+          "default": "~/.kube/config",
+          "description": "Path to kubeconfig file"
+        },
+        "hybrid-ide.cloud.provider": {
+          "type": "string",
+          "default": "aws",
+          "enum": ["aws", "azure", "gcp", "github"],
+          "description": "Cloud provider for sync"
+        },
+        "hybrid-ide.cloud.autoSync": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable automatic cloud sync"
+        },
+        "hybrid-ide.collaboration.serverUrl": {
+          "type": "string",
+          "default": "wss://collab.hybrid-ide.io",
+          "description": "Collaboration server URL"
+        }
+      }
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "command": "hybrid-ide.generateCode",
+          "group": "hybrid-ide@1"
+        },
+        {
+          "command": "hybrid-ide.reviewCode",
+          "group": "hybrid-ide@2"
+        },
+        {
+          "command": "hybrid-ide.debugWithAI",
+          "group": "hybrid-ide@3"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "hybrid-ide.deployToKubernetes",
+          "group": "hybrid-ide@1"
+        },
+        {
+          "command": "hybrid-ide.syncToCloud",
+          "group": "hybrid-ide@2"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "hybrid-ide.generateCode",
+        "key": "ctrl+shift+g",
+        "mac": "cmd+shift+g"
+      },
+      {
+        "command": "hybrid-ide.reviewCode",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r"
+      },
+      {
+        "command": "hybrid-ide.debugWithAI",
+        "key": "ctrl+shift+d",
+        "mac": "cmd+shift+d"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.x",
+    "@typescript-eslint/eslint-plugin": "^6.x",
+    "@typescript-eslint/parser": "^6.x",
+    "eslint": "^8.x",
+    "typescript": "^5.3.0",
+    "@vscode/test-electron": "^2.3.8",
+    "@vscode/vsce": "^2.22.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "ws": "^8.14.0",
+    "yaml": "^2.3.4"
+  },
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Zachman22/hybrid-ide"
+  },
+  "license": "MIT"
+}
