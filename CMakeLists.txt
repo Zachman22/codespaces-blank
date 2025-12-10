@@ -250,10 +250,11 @@ else()
     target_compile_options(ScriptGeneratorChatbot PRIVATE -Wall -Wextra)
 endif()
 
-# Build GitHub authentication setup tool
+# Build GitHub authentication setup tool with license verification
 add_executable(SetupAuth
     setup_auth.cpp
     src/github_auth.cpp
+    src/license_verifier.cpp
 )
 target_include_directories(SetupAuth PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 if(NOT WIN32)

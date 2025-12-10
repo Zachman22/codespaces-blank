@@ -1,11 +1,12 @@
 #include <iostream>
 #include "github_auth.h"
+#include "license_verifier.h"
 
 int main(int argc, char* argv[]) {
     std::cout << R"(
 ╔════════════════════════════════════════════════════════════════════════════╗
 ║                           HYBRID IDE - SETUP                                ║
-║                      GitHub Authentication Required                         ║
+║              License Verification & GitHub Authentication                   ║
 ╚════════════════════════════════════════════════════════════════════════════╝
 
 Welcome to Hybrid IDE!
@@ -24,6 +25,25 @@ Your authentication token is stored securely on your local machine only.
 
 )" << std::endl;
 
+    // Step 1: Verify license and permissions
+    std::cout << "══════════════════════════════════════════════════════════════\n";
+    std::cout << "STEP 1: Verifying license and clone permissions...\n";
+    std::cout << "══════════════════════════════════════════════════════════════\n\n";
+    
+    LicenseVerifier licenseVerifier;
+    std::string repoPath = "..";  // Parent directory (the repo root)
+    
+    if (!licenseVerifier.verifyLicense(repoPath)) {
+        std::cerr << "\n❌ License verification failed\n";
+        std::cerr << "   You may not have permission to use this repository.\n";
+        std::cerr << "   Please contact the repository owner or verify licensing.\n\n";
+        return 1;
+    }
+    
+    std::cout << "══════════════════════════════════════════════════════════════\n";
+    std::cout << "STEP 2: GitHub Authentication\n";
+    std::cout << "══════════════════════════════════════════════════════════════\n\n";
+    
     GitHubAuth auth;
     
     // Check if already authenticated
@@ -66,6 +86,12 @@ Your authentication token is stored securely on your local machine only.
     std::cout << "\n╔════════════════════════════════════════════════════════════════════════════╗\n";
     std::cout << "║                        ✅ SETUP COMPLETE                                    ║\n";
     std::cout << "╚════════════════════════════════════════════════════════════════════════════╝\n\n";
+    
+    std::cout << "✅ License verified and compliant\n";
+    std::cout << "✅ GitHub authentication successful\n\n";
+    
+    // Display license requirements
+    licenseVerifier.displayLicenseRequirements();
     
     std::cout << "You can now use all Hybrid IDE features!\n\n";
     std::cout << "Quick Start:\n";
