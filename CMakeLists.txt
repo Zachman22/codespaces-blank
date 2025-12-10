@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(HybridIDE VERSION 1.0.0 LANGUAGES CXX)
+project(HybridIDE VERSION 2.0.0 LANGUAGES CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -51,6 +51,14 @@ set(HEADERS
     include/auto_coder_chatbot.h
     include/script_generator.h
     include/script_verifier.h
+    include/ai_api_client.h
+    include/kubernetes_manager.h
+    include/debugger.h
+    include/profiler.h
+    include/cloud_sync.h
+    include/collaboration.h
+    include/webview_gtk.h
+    include/webview_macos.h
 )
 
 # Create executable
