@@ -4,8 +4,11 @@ A modern, AI-powered development environment combining C++ backend with React fr
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
 [![Version](https://img.shields.io/badge/version-2.0.0-blue)]()
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey)]()
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)]()
 [![License](https://img.shields.io/badge/license-MIT-green)]()
+[![Features](https://img.shields.io/badge/features-complete-success)]()
+
+> **Version 2.0 Complete!** All planned features implemented - See [VERSION_2.0_FEATURES.md](VERSION_2.0_FEATURES.md) for full details
 
 ---
 
