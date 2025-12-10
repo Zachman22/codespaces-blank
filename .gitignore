@@ -17,7 +17,8 @@ frontend/.vite/
 package/
 
 # IDE files
-.vscode/
+.vscode/*
+!.vscode/extensions.json
 .idea/
 *.suo
 *.user
@@ -39,3 +40,15 @@ build.log
 
 # WebView2 cache
 WebView2/
+
+# React app dependencies and build
+/node_modules
+/dist
+.vscode/*.code-workspace
+.env.local
+.env
+.playwright
+
+# Backups
+cpp-src/
+*.old*.md
