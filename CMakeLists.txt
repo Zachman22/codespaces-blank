@@ -48,6 +48,7 @@ set(HEADERS
     include/docker_manager.h
     include/auto_coder.h
     include/ai_agent_system.h
+    include/ide_application.h
     include/auto_coder_chatbot.h
     include/script_generator.h
     include/script_verifier.h
@@ -125,8 +126,34 @@ else()
     endif()
 endif()
 
+# Create Complete IDE Executable
+add_executable(HybridIDE_Complete
+    ide_main.cpp
+    src/ide_application.cpp
+    src/ide_components.cpp
+    src/ai_api_client.cpp
+    src/compiler.cpp
+    src/debugger.cpp
+    src/profiler.cpp
+    src/file_operations.cpp
+    src/system_info.cpp
+)
+
+target_include_directories(HybridIDE_Complete PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(HybridIDE_Complete PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+
+if(WIN32)
+    if(OPENSSL_FOUND)
+        target_link_libraries(HybridIDE_Complete PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+    endif()
+else()
+    if(OPENSSL_FOUND)
+        target_link_libraries(HybridIDE_Complete PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+    endif()
+endif()
+
 # Installation rules
-install(TARGETS HybridIDE
+install(TARGETS HybridIDE HybridIDE_Complete
     RUNTIME DESTINATION bin
 )
 
