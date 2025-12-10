@@ -66,8 +66,19 @@ bool GitHubAuth::startDeviceFlow() {
     std::cout << "║          GitHub Authentication - Device Flow                   ║\n";
     std::cout << "╚════════════════════════════════════════════════════════════════╝\n\n";
     
-    // Generate device code request
-    std::string clientId = "Iv1.b507a08c87ecfe98"; // GitHub OAuth App Client ID
+    // Get Client ID from environment variable or use placeholder
+    const char* envClientId = std::getenv("GITHUB_CLIENT_ID");
+    std::string clientId = envClientId ? envClientId : "Iv1.b507a08c87ecfe98";
+    
+    // Warn if using placeholder
+    if (!envClientId) {
+        std::cout << "⚠️  WARNING: Using demo Client ID\n";
+        std::cout << "   For real authentication, create a GitHub OAuth App at:\n";
+        std::cout << "   https://github.com/settings/developers\n\n";
+        std::cout << "   Then set: export GITHUB_CLIENT_ID=\"your_client_id\"\n";
+        std::cout << "   See OAUTH_SETUP_GUIDE.md for detailed instructions\n\n";
+    }
+    
     std::string scope = "repo,user,read:org";
     
     std::cout << "🔐 Initiating GitHub Device Authentication...\n\n";
@@ -483,8 +494,9 @@ bool GitHubAuth::startNumericPinFlow() {
     std::cout << "\n⏳ Verifying authentication";
     std::cout.flush();
     
-    // Poll for token
-    std::string clientId = "Iv1.b507a08c87ecfe98";
+    // Poll for token (use same Client ID logic)
+    const char* envClientId = std::getenv("GITHUB_CLIENT_ID");
+    std::string clientId = envClientId ? envClientId : "Iv1.b507a08c87ecfe98";
     std::string deviceCode = "pin_" + std::to_string(pin);
     
     for (int i = 0; i < 30; i++) { // 30 attempts, 5 sec each = 2.5 min
