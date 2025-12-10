@@ -31,6 +31,7 @@ set(SOURCES
     src/docker_manager.cpp
     src/auto_coder.cpp
     src/ai_agent_system.cpp
+    src/auto_coder_chatbot.cpp
 )
 
 # Header files
@@ -47,6 +48,7 @@ set(HEADERS
     include/docker_manager.h
     include/auto_coder.h
     include/ai_agent_system.h
+    include/auto_coder_chatbot.h
 )
 
 # Create executable
@@ -168,6 +170,26 @@ endif()
 
 include(CPack)
 
+# Build standalone chatbot executable
+add_executable(AutoCoderChatbot 
+    chatbot_main.cpp
+    src/auto_coder_chatbot.cpp
+    src/auto_coder.cpp
+    src/prompt_verifier.cpp
+    src/compiler.cpp
+    src/code_signer.cpp
+)
+target_include_directories(AutoCoderChatbot PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+if(NOT WIN32)
+    find_package(OpenSSL REQUIRED)
+    target_link_libraries(AutoCoderChatbot PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+endif()
+if(MSVC)
+    target_compile_options(AutoCoderChatbot PRIVATE /W4)
+else()
+    target_compile_options(AutoCoderChatbot PRIVATE -Wall -Wextra)
+endif()
+
 # Print configuration
 message(STATUS "")
 message(STATUS "========================================")
@@ -176,5 +198,6 @@ message(STATUS "========================================")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "Install prefix: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "Targets: HybridIDE, AutoCoderChatbot")
 message(STATUS "========================================")
 message(STATUS "")
