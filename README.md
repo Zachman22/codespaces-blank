@@ -3,9 +3,26 @@
 A modern, AI-powered development environment combining C++ backend with React frontend, featuring natural language code generation, Docker container management, and autonomous development capabilities.
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)]()
+[![Version](https://img.shields.io/badge/version-2.0.0-blue)]()
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey)]()
 [![License](https://img.shields.io/badge/license-MIT-green)]()
+
+---
+
+## 🔐 First Time Setup
+
+**After cloning this repository, please authenticate to verify your installation:**
+
+```bash
+cd hybrid-ide/build
+cmake ..
+make SetupAuth
+./bin/SetupAuth
+```
+
+👉 **[Complete Setup Guide](SETUP.md)** - Takes less than 1 minute!
+
+This one-time setup enables cloud features and verifies your GitHub account.
 
 ---
 

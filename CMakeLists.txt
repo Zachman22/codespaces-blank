@@ -250,6 +250,22 @@ else()
     target_compile_options(ScriptGeneratorChatbot PRIVATE -Wall -Wextra)
 endif()
 
+# Build GitHub authentication setup tool
+add_executable(SetupAuth
+    setup_auth.cpp
+    src/github_auth.cpp
+)
+target_include_directories(SetupAuth PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+if(NOT WIN32)
+    find_package(OpenSSL REQUIRED)
+    target_link_libraries(SetupAuth PRIVATE OpenSSL::SSL OpenSSL::Crypto pthread)
+endif()
+if(MSVC)
+    target_compile_options(SetupAuth PRIVATE /W4)
+else()
+    target_compile_options(SetupAuth PRIVATE -Wall -Wextra)
+endif()
+
 # Print configuration
 message(STATUS "")
 message(STATUS "========================================")
